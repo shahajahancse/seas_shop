@@ -9,6 +9,7 @@ function validateEmail(sEmail) {
     }
 }
 /*Email validation code end*/
+
 /* customers modal start*/
 $(".add_customer").click(function(e){
 	var base_url=$("#base_url").val().trim();
@@ -31,8 +32,8 @@ $(".add_customer").click(function(e){
     //Validate Input box or selection box should not be blank or empty
 	check_field("customer_name");
 	//check_field("state");
-	
-	
+
+
     if(flag==false)
     {
 		toastr["warning"]("You have Missed Something to Fillup!");
@@ -50,14 +51,14 @@ $(".add_customer").click(function(e){
         }
     var this_id=this.id;
 
-    
+
 
 			if(confirm("Are you Sure ?")){
 				e.preventDefault();
 				data = new FormData($('#customer-form')[0]);//form name
 				/*Check XSS Code*/
 				if(!xss_validation(data)){ return false; }
-				
+
 				$(".box").append('<div class="overlay"><i class="fa fa-refresh fa-spin"></i></div>');
 				$("#"+this_id).attr('disabled',true);  //Enable Save or Update button
 				$.ajax({
@@ -71,7 +72,7 @@ $(".add_customer").click(function(e){
       				//alert(result);//return;
       				var data = jQuery.parseJSON(result);
 					if(data.result=="success")
-					{   
+					{
 						$('#customer-modal').modal('toggle');
 					   	var newOption = '<option value='+data.id+' selected>'+data.customer_name+'</option>';
 					    $('#customer_id').append(newOption).trigger('change');
@@ -99,7 +100,7 @@ $(".add_customer").click(function(e){
 			   }
 			   });
 		} //confirmation sure
-		
+
 
 		//e.preventDefault
 });
@@ -127,8 +128,8 @@ $(".add_supplier").click(function(e){
     //Validate Input box or selection box should not be blank or empty
 	check_field("supplier_name");
 	//check_field("state");
-	
-	
+
+
     if(flag==false)
     {
 		toastr["warning"]("You have Missed Something to Fillup!");
@@ -146,15 +147,15 @@ $(".add_supplier").click(function(e){
         }
     var this_id=this.id;
 
-    
+
 
 			if(confirm("Are you Sure ?")){
-				
+
 				e.preventDefault();
 				data = new FormData($('#supplier-form')[0]);//form name
 				/*Check XSS Code*/
 				if(!xss_validation(data)){ return false; }
-				
+
 				$(".box").append('<div class="overlay"><i class="fa fa-refresh fa-spin"></i></div>');
 				$("#"+this_id).attr('disabled',true);  //Enable Save or Update button
 				$.ajax({
@@ -168,7 +169,7 @@ $(".add_supplier").click(function(e){
       				//alert(result);//return;
       				var data = jQuery.parseJSON(result);
 					if(data.result=="success")
-					{   
+					{
 						$('#supplier-modal').modal('toggle');
 					   	var newOption = '<option value='+data.id+' selected>'+data.supplier_name+'</option>';
 					    $('#supplier_id').append(newOption).trigger('change');
@@ -196,7 +197,7 @@ $(".add_supplier").click(function(e){
 			   }
 			   });
 		} //confirmation sure
-		
+
 
 		//e.preventDefault
 });
