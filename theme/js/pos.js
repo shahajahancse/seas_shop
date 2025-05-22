@@ -10,8 +10,22 @@ $("#item_search").autocomplete({
         name: data.term,
       },
       success: function (res) {
+        $("#item_search").val('');
+        $("#item_search").empty().removeClass('ui-autocomplete-loading');
         var result;
-        if (res.length) {
+        if (res.length == 1) {
+          us = res[0];
+          if(parseInt(us.stock) <= 0){
+            toastr["warning"](us.stock+" Items in Stock!! ");
+            return false;
+          }
+          var item_id = us.id;
+          if(document.getElementById("tr_item_id_"+item_id)){
+            return false;
+          } else {
+            return_row_with_data(item_id);
+          }
+        } else if (res.length > 1)  {
           result = $.map(res, function (el) {
             return {
               label: el.item_code + "--[Qty:" + el.stock + "] --" + el.item_name, value: "",
