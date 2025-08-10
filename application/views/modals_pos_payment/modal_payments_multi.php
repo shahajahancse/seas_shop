@@ -1,3 +1,49 @@
+  <!-- **********************MODALS***************** -->
+  <div class="modal fade" id="discount-modal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Set Discount</h4>
+        </div>
+        <div class="modal-body">
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="box-body">
+                  <div class="form-group">
+                    <label for="discount_input">Discount</label>
+                    <input class="form-control" id="discount_input" name="discount_input" value="0" onkeyup="check_max_dis(this.value)">
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="box-body">
+                  <div class="form-group">
+                    <label for="discount_type">Discount Type</label>
+                    <select onchange="check_max_dis()" class="form-control" id='discount_type' name="discount_type">
+                      <option value='in_percentage'>Per%</option>
+                      <option value='in_fixed'>Fixed</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-warning" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary discount_update">Update</button>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+  <!-- **********************MODALS END***************** -->
+
+
 <div class="modal fade" id="multiple-payments-modal">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -212,19 +258,39 @@
 </div>
 
 <script>
-  function rowRem(id){//id=Rowid
-    $(".payments_div_"+id).remove();
-    failed.currentTime = 0;
-    failed.play();
-    final_total();
-}
+  function check_max_dis(val = 0) {
+    if (val == 0) {
+      var val = parseFloat($("#discount_input").val()).toFixed(2);
+    }
+
+    var get_profit = parseFloat($("#tot_profit").val()).toFixed(2);
+    var get_dis = parseFloat($("#item_tot_dis").val()).toFixed(2);
+    var total = parseFloat($(".tot_amt").text());
+    var get_tot_dis = 0;
+
+    var discount_type=$("#discount_type").val();
+    if(discount_type == 'in_percentage'){
+      get_tot_dis = (1 + parseFloat((total*val)/100)).toFixed(2);
+    }else{
+      get_tot_dis = (1 + parseFloat(val) + parseFloat(get_dis)).toFixed(2);
+    }
+
+    if (!isNaN(parseFloat(get_tot_dis)) && parseFloat(get_tot_dis) > parseFloat(get_profit)) {
+      var max = (get_profit - 1).toFixed(2);
+      $('#discount_input').val("");
+      toastr['error']("Sorry! Maximum Discount amount is " + max);
+      return false;
+    }
+  }
 </script>
 
-
-  <?php
-    $q1 = $this->db->query("select * from db_paymenttypes where status=1")->result();
-  ?>
-
+<script>
+  function rowRem(id){//id=Rowid
+    $(".payments_div_"+id).remove();
+    final_total();
+  }
+</script>
+<?php $q1 = $this->db->query("select * from db_paymenttypes where status=1")->result(); ?>
 <script>
   function create_sub_pay_row(rowcount) {
     var paymentTypes = <?php echo json_encode($q1); ?>;

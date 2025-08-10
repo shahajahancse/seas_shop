@@ -34,7 +34,6 @@
 		$company_gst_no		=$res1->gst_no;//Goods and Service Tax Number (issued by govt.)
 		$company_vat_number		=$res1->vat_no;//Goods and Service Tax Number (issued by govt.)
 		//dd(5555);
-
 	?>
 
 	<!-- Customer info end -->
@@ -174,6 +173,10 @@
 					<tr>
 						<td><?= $this->lang->line('name'); ?></td>
 						<td><?= $customer_name; ?></td>
+					</tr>
+					<tr>
+						<td>Mobile</td>
+						<td><?= $customer_mobile; ?></td>
 					</tr>
 					<tr>
 						<td><?= $this->lang->line('date').":".$sales_date; ?></td>

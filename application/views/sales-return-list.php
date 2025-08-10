@@ -120,12 +120,12 @@
           <div class="box">
             <div class="box-header with-border">
               <h3 class="box-title"><?=$page_title;?></h3>
-              <?php if($CI->permissions('sales_return_add')) { ?>
-              <div class="box-tools">
+              <?php // if($CI->permissions('sales_return_add')) { ?>
+              <!-- <div class="box-tools">
                 <a class="btn btn-block btn-info" href="<?php echo $base_url; ?>sales_return/create">
                 <i class="fa fa-plus"></i> <?= $this->lang->line('create_new'); ?></a>
-              </div>
-              <?php } ?>
+              </div> -->
+              <?php // } ?>
             </div>
             <!-- /.box-header -->
             <div class="box-body">

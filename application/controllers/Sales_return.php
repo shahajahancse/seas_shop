@@ -181,14 +181,14 @@ class Sales_return extends MY_Controller {
 												</a>
 											</li>';
 
-											if($this->permissions('sales_return_delete'))
-											$str2.='<li>
-												<a style="cursor:pointer" title="Delete Record ?" onclick="delete_return(\''.$sales->id.'\')">
-													<i class="fa fa-fw fa-trash text-red"></i>Delete
-												</a>
-											</li>
+											// if($this->permissions('sales_return_delete'))
+											// $str2.='<li>
+											// 	<a style="cursor:pointer" title="Delete Record ?" onclick="delete_return(\''.$sales->id.'\')">
+											// 		<i class="fa fa-fw fa-trash text-red"></i>Delete
+											// 	</a>
+											// </li>
 
-										</ul>
+										'</ul>
 									</div>';
 
 			$row[] = $str2;
