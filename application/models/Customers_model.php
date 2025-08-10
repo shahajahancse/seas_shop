@@ -80,14 +80,7 @@ class Customers_model extends CI_Model {
 	public function verify_and_save(){
 		//Filtering XSS and html escape from user inputs
 		extract($this->security->xss_clean(html_escape(array_merge($this->data,$_POST))));
-
 		$state = (!empty($state)) ? $state : 'NULL';
-
-		//Validate This customers already exist or not
-		// $query=$this->db->query("select * from db_customers where mobile=upper('$customer_name')");
-		// if($query->num_rows()>0){
-		// 	return "Sorry!  This Customers Name already Exist.";
-		// }
 		$query2=$this->db->query("select * from db_customers where mobile='$mobile'");
 		if($query2->num_rows()>0 && !empty($mobile)){
 			return "Sorry! This Mobile Number already Exist.";
@@ -109,7 +102,7 @@ class Customers_model extends CI_Model {
 											system_ip,system_name,
 											created_date,created_time,created_by,status,gstin,tax_number)
 											values('$customer_code','$customer_name','$mobile','$phone','$email',
-											'$country',$state,'$city','$postcode','$address','$opening_balance',
+											'$country',$state,NULL,'$postcode','$address','0',
 											'$SYSTEM_IP','$SYSTEM_NAME',
 											'$CUR_DATE','$CUR_TIME','$CUR_USERNAME',1,'$gstin','$tax_number')";
 

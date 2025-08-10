@@ -31,7 +31,7 @@
 <script src="<?php echo $theme_link; ?>js/custom.js"></script>
 <!-- sweet alert -->
 <script src="<?php echo $theme_link; ?>js/sweetalert.min.js"></script>
-<!-- Autocomplete -->      
+<!-- Autocomplete -->
 <script src="<?php echo $theme_link; ?>plugins/autocomplete/autocomplete.js"></script>
 <!-- Pace Loader -->
 <script src="<?php echo $theme_link; ?>plugins/pace/pace.min.js"></script>
@@ -99,13 +99,13 @@ $(function($) { // this script needs to be loaded on every page where an ajax PO
 <!-- Initialize toggler -->
 <script type="text/javascript">
   $(document).ready(function(){
-      $('[data-toggle="popover"]').popover();   
+      $('[data-toggle="popover"]').popover();
   });
 </script>
 <!-- start pace loader -->
 <script type="text/javascript">
-$(document).ajaxStart(function() { Pace.restart(); }); 
-</script>  
+$(document).ajaxStart(function() { Pace.restart(); });
+</script>
 <script type="text/javascript">
 $(document).ready(function () { setTimeout(function() {$( ".alert-dismissable" ).fadeOut( 1000, function() {});}, 10000); });
 </script>

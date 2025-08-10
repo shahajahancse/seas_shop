@@ -25,19 +25,9 @@ class Pos_model extends CI_Model {
 	        	$item_tax = $res2->tax;
 	        	$profit_margin = $res2->profit_margin;
 	        	$item_sales_qty = 1;
-
-	        	//Check Exculsive or Inclusive
 				$single_unit_price = $item_sales_price;
-	        	// if($item_tax_type=='Exclusive'){
-				// 	$item_sales_price=$item_sales_price+ (($item_sales_price*$item_tax)/100);
-				// 	$item_tax_amt = (($single_unit_price * $item_sales_qty)*$item_tax)/100;
-				// }else{//Inclusive
 				$item_tax_amt=$res2->vat_amt;
-				//$item_sales_price
-					//$single_unit_price = $item_sales_price;
-				//}
 				$item_amount = ($item_sales_price * $item_sales_qty) + $item_tax_amt;
-				//end
 
 				if ($res2->discount_type == 1) {
 					$discount = round(($res2->mr_price * $res2->discount) / 100, 2);
@@ -96,8 +86,6 @@ class Pos_model extends CI_Model {
 	public function pos_save_update(){//Save or update sales
 		$this->db->trans_begin();
 		extract($this->xss_html_filter(array_merge($this->data,$_POST,$_GET)));
-		//print_r($this->xss_html_filter(array_merge($this->data,$_POST,$_GET)));exit();
-		//dd($_POST);
 
 		//check payment method
 		if(isset($by_cash) && $by_cash==true){ //by cash payment
@@ -108,21 +96,18 @@ class Pos_model extends CI_Model {
 		}
 		//end
 
-		$rowcount 			=$hidden_rowcount;
-		$sales_date 		=date("Y-m-d",strtotime($CUR_DATE));
+		$item_id_array 		= $_POST['item_id_array'];
+		$sales_date 		= date("Y-m-d",strtotime($CUR_DATE));
 		$points 			= (empty($points_use)) ? 'NULL' : $points_use;
 		$discount_input 	= (empty($discount_input)) ? 'NULL' : $discount_input;
-		$tot_disc 		= (empty($tot_disc) || $tot_disc==0) ? '0' : $tot_disc;
-		$tot_grand 		= (empty($tot_grand)) ? '0' : $tot_grand;
-		//$tot_grand		=round($tot_amt);
+		$tot_disc 			= (empty($tot_disc) || $tot_disc==0) ? '0' : $tot_disc;
+		$tot_grand 			= (empty($tot_grand)) ? '0' : $tot_grand;
 		$round_off = number_format($tot_grand-$tot_amt,2,'.','');
-
 
 		//FIND CUSTOMER INFORMATION BY ITS ID
 		$q1=$this->db->query("select customer_name,mobile from db_customers where id=$customer_id");
 		$customer_name 	= $q1->row()->customer_name;
 		$mobile 		= $q1->row()->mobile;
-
 
 		if($command=='update'){
 			$this->session->set_flashdata('success', 'Success!! Sales Created Successfully!'.$sms_info);
@@ -130,22 +115,17 @@ class Pos_model extends CI_Model {
 			exit();
 
 			$sales_entry = array(
-						'sales_date' 				=> $sales_date,
-						'sales_status' 				=> 'Final',
-						'customer_id' 				=> $customer_id,
-						/*'warehouse_id' 				=> $warehouse_id,*/
-						/*Discount*/
-						'discount_to_all_input' 	=> $discount_input,
-						'discount_to_all_type' 		=> $discount_type,
-						'tot_discount_to_all_amt' 	=> $tot_disc,
-						/*Subtotal & Total */
-						'subtotal' 					=> $tot_amt,
-						'round_off' 				=> $round_off,
-						'grand_total' 				=> $tot_grand,
-					);
-
+				'sales_date' 				=> $sales_date,
+				'sales_status' 				=> 'Final',
+				'customer_id' 				=> $customer_id,
+				'discount_to_all_input' 	=> $discount_input,
+				'discount_to_all_type' 		=> $discount_type,
+				'tot_discount_to_all_amt' 	=> $tot_disc,
+				'subtotal' 					=> $tot_amt,
+				'round_off' 				=> $round_off,
+				'grand_total' 				=> $tot_grand,
+			);
 			$q3 = $this->db->where('id',$sales_id)->update('db_sales', $sales_entry);
-
 			$q11=$this->db->query("delete from db_salesitems where sales_id='$sales_id'");
 			$q12=$this->db->query("delete from db_salespayments where sales_id='$sales_id'");
 			if(!$q11 || !$q12){
@@ -156,45 +136,36 @@ class Pos_model extends CI_Model {
 			$q5=$this->db->query("select sales_init from db_company where id=1");
 			$init=$q5->row()->sales_init;
 
-
 			//ORDER SALES CREATION
 			$maxid=$this->db->query("SELECT COALESCE(MAX(id),0)+1 AS maxid FROM db_sales")->row()->maxid;
 			$sales_code=$init.str_pad($maxid, 10, '0', STR_PAD_LEFT);
-
 			$sales_entry = array(
-		    				'sales_code' 				=> $sales_code,
-		    				'sales_date' 				=> $sales_date,
-		    				'sales_status' 				=> 'Final',
-		    				'customer_id' 				=> $customer_id,
-		    				/*'warehouse_id' 				=> $warehouse_id,*/
-		    				/*Discount*/
-		    				'discount_to_all_input' 	=> $discount_input,
-		    				'discount_to_all_type' 		=> $discount_type,
-		    				'tot_discount_to_all_amt' 	=> $tot_disc,
-		    				/*Subtotal & Total */
-		    				'subtotal' 					=> $tot_amt,
-		    				'round_off' 				=> $round_off,
-		    				'grand_total' 				=> $tot_grand,
-		    				/*System Info*/
-		    				'created_date' 				=> $CUR_DATE,
-		    				'created_time' 				=> $CUR_TIME,
-		    				'created_by' 				=> $CUR_USERNAME,
-		    				'system_ip' 				=> $SYSTEM_IP,
-		    				'system_name' 				=> $SYSTEM_NAME,
-		    				'pos' 						=> 1,
-		    				'status' 					=> 1,
-		    			);
-
+				'sales_code' 				=> $sales_code,
+				'sales_date' 				=> $sales_date,
+				'sales_status' 				=> 'Final',
+				'customer_id' 				=> $customer_id,
+				'discount_to_all_input' 	=> $discount_input,
+				'discount_to_all_type' 		=> $discount_type,
+				'tot_discount_to_all_amt' 	=> $tot_disc,
+				'subtotal' 					=> $tot_amt,
+				'round_off' 				=> $round_off,
+				'grand_total' 				=> $tot_grand,
+				'created_date' 				=> $CUR_DATE,
+				'created_time' 				=> $CUR_TIME,
+				'created_by' 				=> $CUR_USERNAME,
+				'system_ip' 				=> $SYSTEM_IP,
+				'system_name' 				=> $SYSTEM_NAME,
+				'pos' 						=> 1,
+				'status' 					=> 1,
+			);
 			$q3 = $this->db->insert('db_sales', $sales_entry);
 			$sales_id = $this->db->insert_id();
 		}
 		//Import post data from form
 		// cal additional discount of each item
 		$add_dis_one = $tot_disc / $tot_amt;
-		for($i=0;$i<$rowcount;$i++){
-
+		foreach ($item_id_array as $key => $i) {
 			if(isset($_REQUEST['tr_item_id_'.$i]) && trim($_REQUEST['tr_item_id_'.$i])!=''){
-
 				//RECEIVE VALUES FROM FORM
 				$item_id 	=$this->xss_html_filter(trim($_REQUEST['tr_item_id_'.$i]));
 				$sales_qty 	=$this->xss_html_filter(trim($_REQUEST['item_qty_'.$item_id]));
@@ -204,7 +175,6 @@ class Pos_model extends CI_Model {
 
 				//Find item ID
 				$q4=$this->db->query("select sales_price,tax_id from db_items where id=$item_id");
-				//$price_per_unit=$q4->row()->sales_price;
 				$tax_id = (empty($q4->row()->tax_id)) ? 'NULL' : $q4->row()->tax_id;
 				//end
 
@@ -212,30 +182,13 @@ class Pos_model extends CI_Model {
 				$unit_total_cost = $price_per_unit;
 				$total_cost = $price_per_unit * $sales_qty;
 				//end
-				// shahajahan
-				$mr_price   = $this->xss_html_filter(trim($_REQUEST['mrp_hide_'.$item_id]));
-				// $item_adis  =$this->xss_html_filter(trim($_REQUEST['item_adis_'.$item_id]));
-				// shahajahan
 
+				$mr_price   = $this->xss_html_filter(trim($_REQUEST['mrp_hide_'.$item_id]));
 				$tax_d =$this->db->select('*')->from('db_items')->where('id',$item_id)->get()->row();
 				$tax_type = $tax_d->tax_type;
 
 				$unit_tax = 0;
 				$tax_amt = $tax_d->vat_amt*$sales_qty;
-				// if(!empty($tax_id) && $tax_id!=0){
-				// 	//each unit tax amt
-				// 	$unit_tax =$this->db->select('tax')->from('db_tax')->where('id',$tax_id)->get()->row()->tax;
-				// 	$tax_amt = (($unit_tax * $price_per_unit)/100)*$sales_qty;
-				// 	// if($tax_type=='Exclusive'){
-				// 	// 	//$total_cost+=$tax_amt;
-				// 	// }else{//Inclusive
-				// 	// 	$unit_tax =$this->db->select('tax')->from('db_tax')->where('id',$tax_id)->get()->row()->tax;
-				// 	// 	$tax_amt = $this->inclusive($price_per_unit,$unit_tax);
-				// 	// }
-				// }
-				//dd($price_per_unit);
-
-
 				if($tax_amt=='' || $tax_amt==0){
 					$tax_amt = 0;
 				}
@@ -245,38 +198,34 @@ class Pos_model extends CI_Model {
 				$add_dis = round(($add_dis_one * $price_per_unit * $sales_qty),2);
 				$aaadis = $add_dis_one * $price_per_unit;
 				$salesitems_entry = array(
-		    				'sales_id' 			=> $sales_id,
-		    				'sales_status'		=> 'Final',
-		    				'item_id' 			=> $item_id,
-		    				'sales_qty' 		=> $sales_qty,
-		    				'mr_price' 			=> ($mr_price) ? $mr_price : 0,
-		    				'price_per_unit' 	=> $price_per_unit,
-		    				'tax_id' 			=> $tax_id,
-		    				'vat_unit' 			=> $tax_d->vat_amt,
-		    				'tax_amt' 			=> $tax_amt,
-		    				'unit_discount_per' => $dis_per_qty,
-		    				'discount_amt' 		=> $dis_too,
-		    				'additional_dis'    => $aaadis, //Additional Discount per unit
-		    				'add_dis_tot'    	=> $add_dis, //Additional Discount total
-		    				'unit_total_cost' 	=> $price_per_unit,
-		    				'total_cost' 		=> $total_cost,
-		    				'status'	 		=> 1,
-		    			);
-						//dd($salesitems_entry);
+					'sales_id' 			=> $sales_id,
+					'sales_status'		=> 'Final',
+					'item_id' 			=> $item_id,
+					'sales_qty' 		=> $sales_qty,
+					'mr_price' 			=> ($mr_price) ? $mr_price : 0,
+					'price_per_unit' 	=> $price_per_unit,
+					'tax_id' 			=> $tax_id,
+					'vat_unit' 			=> $tax_d->vat_amt,
+					'tax_amt' 			=> $tax_amt,
+					'unit_discount_per' => $dis_per_qty,
+					'discount_amt' 		=> $dis_too,
+					'additional_dis'    => $aaadis, //Additional Discount per unit
+					'add_dis_tot'    	=> $add_dis, //Additional Discount total
+					'unit_total_cost' 	=> $price_per_unit,
+					'total_cost' 		=> $total_cost,
+					'status'	 		=> 1,
+				);
 				$q4 = $this->db->insert('db_salesitems', $salesitems_entry);
 
 				$q11=$this->update_items_quantity($item_id);
 				if(!$q11){
 					return "failed";
 				}
-
 			}
-
 		}//for end
 
 		//UPDATE CUSTMER MULTPLE PAYMENTS
 		for($i=1;$i<=$payment_row_count;$i++){
-
 			if((isset($_REQUEST['amount_'.$i]) && trim($_REQUEST['amount_'.$i])!='') || ($by_cash==true)){
 
 				if($by_cash==true){
@@ -314,16 +263,13 @@ class Pos_model extends CI_Model {
     				'status' 			=> 1,
 				);
 
-			  $q7 = $this->db->insert('db_salespayments', $salespayments_entry);
-
+			  	$q7 = $this->db->insert('db_salespayments', $salespayments_entry);
 			    if(!$q7)
 				{
 					echo "q7\n";
 					return "failed";
 				}
-
 			}//if()
-
 		}//for end
 
 
@@ -342,16 +288,7 @@ class Pos_model extends CI_Model {
 		}
 		//COMMIT RECORD
 		$this->db->trans_commit();
-
-		 $sms_info='';
-		/* if(isset($send_sms) && $customer_id!=1){
-			if(send_sms_using_template($sales_id,1)==true){
-				$sms_info = 'SMS Has been Sent!';
-			}else{
-				$sms_info = 'Failed to Send SMS';
-			}
-		} */
-
+		$sms_info='';
 		$this->session->set_flashdata('success', 'Success!! Sales Created Successfully!'.$sms_info);
         return "success<<<###>>>$sales_id";
 	}
@@ -455,7 +392,6 @@ class Pos_model extends CI_Model {
 
 	}//edit_pos()
 
-
 	/* ######################################## HOLD INVOICE ############################# */
 	public function hold_invoice(){
 		$this->db->trans_begin();
@@ -464,13 +400,12 @@ class Pos_model extends CI_Model {
 		$this->db->query("DELETE from temp_holdinvoice where invoice_id='$hidden_invoice_id'");
 		$maxid=$this->db->query("select coalesce(max(id),0)+1 as maxid from temp_holdinvoice")->row()->maxid;
 
-    	for ($i=0; $i < $hidden_rowcount; $i++) {
+    	foreach ($_POST['item_id_array'] as $key => $i) {
+
     		if(isset($_POST['tr_item_id_'.$i])){
     		$item_id=$this->xss_html_filter($_POST['tr_item_id_'.$i]);
 			$item_qty=$this->xss_html_filter($_POST['item_qty_'.$item_id]);
 			$item_price=$this->xss_html_filter($_POST['tr_sales_price_temp_'.$i]);
-			//$tax=$this->xss_html_filter($_POST['tr_item_per_'.$i]);
-
 
     		$q1=$this->db->simple_query("INSERT into temp_holdinvoice(invoice_id,reference_id,invoice_date,
     			item_id,item_qty,item_price,tax,
@@ -483,15 +418,14 @@ class Pos_model extends CI_Model {
     		if(!$q1){
 				return "failed";
 			}
-
 		  }//if row exist
     	}//for end()
 
 		//COMMIT RECORD
 		$this->db->trans_commit();
         return "success<<<###>>>$maxid";
-
 	}
+
 	public function hold_invoice_list(){
 		$data=$this->data;
 		extract($data);
