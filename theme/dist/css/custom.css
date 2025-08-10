@@ -3,6 +3,8 @@
 }
 .dataTables_processing{
 	border:0px;
+	/*background-color :#337ab7;
+	z-index: 100*/
 }
 .pointer{
       cursor:pointer;
@@ -19,7 +21,7 @@
 .font-italic{
 	font-style: italic !important;
 }
-.bg-dream-blue{
+.bg-dream-blue{	
 	background-image: -webkit-gradient(linear, left top, right top, from(#20b9ae), to(#006fd6));
 	color:white;
 }
