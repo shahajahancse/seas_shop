@@ -10,8 +10,6 @@ $("#item_search").autocomplete({
         name: data.term,
       },
       success: function (res) {
-        $("#item_search").val('');
-        $("#item_search").empty().removeClass('ui-autocomplete-loading');
         var result;
         if (res.length == 1) {
           us = res[0];
@@ -42,6 +40,8 @@ $("#item_search").autocomplete({
 	search: function (e, u) {
 	},
 	select: function (e, u) {
+    $("#item_search").val('');
+    $("#item_search").empty().removeClass('ui-autocomplete-loading');
 		if(parseInt(u.item.stock) <= 0){
 			toastr["warning"](u.item.stock+" Items in Stock!! ");
 			return false;
