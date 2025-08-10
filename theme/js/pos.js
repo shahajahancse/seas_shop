@@ -15,12 +15,19 @@ $("#item_search").autocomplete({
           us = res[0];
           if(parseInt(us.stock) <= 0){
             toastr["warning"](us.stock+" Items in Stock!! ");
+            $("#item_search").val('');
+            $("#item_search").empty().removeClass('ui-autocomplete-loading');
             return false;
           }
           var item_id = us.id;
           if(document.getElementById("tr_item_id_"+item_id)){
+            toastr["warning"]("Item Already Added");
+            $("#item_search").val('');
+            $("#item_search").empty().removeClass('ui-autocomplete-loading');
             return false;
           } else {
+            $("#item_search").val('');
+            $("#item_search").empty().removeClass('ui-autocomplete-loading');
             return_row_with_data(item_id);
           }
         } else if (res.length > 1)  {
@@ -32,8 +39,21 @@ $("#item_search").autocomplete({
               stock: el.stock,
             };
           });
+        } else {
+          $("#item_search").val('');
+          $("#item_search").empty().removeClass('ui-autocomplete-loading');
+          result = [
+            {
+              label: "No Records Found " + data.term,
+              value: "",
+            },
+          ];
         }
         cb(result);
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        $("#item_search").val('');
+        $("#item_search").empty().removeClass('ui-autocomplete-loading');
       },
     });
   },
@@ -48,12 +68,15 @@ $("#item_search").autocomplete({
 		}
 		var item_id = u.item.id;
 		if(document.getElementById("tr_item_id_"+item_id)){
+      toastr["warning"]("Item Already Added");
       return false;
     } else {
       return_row_with_data(item_id);
     }
 	},
 });
+
+
 
 function return_row_with_data(item_id, qty = null){
   $("#item_search").addClass('ui-autocomplete-loader-center');
