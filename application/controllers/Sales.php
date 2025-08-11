@@ -142,7 +142,7 @@ class Sales extends MY_Controller {
 											</li>';
 
 											if ($sales->return_bit != 1) {
-												if($this->permissions('sales_return'))
+												// if($this->permissions('sales_return'))
 												$str2.='<li>
 													<a title="Sales Return" href="sales_return/add/'.$sales->id.'">
 														<i class="fa fa-fw fa-undo text-blue"></i>Sales Return
