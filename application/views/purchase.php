@@ -523,7 +523,6 @@
          }
 
          var tax=$('option:selected', "#td_data_"+i+"_15").attr('data-tax');
-
          tax        =(isNaN(parseFloat(tax)))         ? 0 : parseFloat(tax);
          discount   =(isNaN(parseFloat(discount)))    ? 0 : parseFloat(discount);
 
@@ -534,7 +533,6 @@
          var total_amt=tax_amt+amt-discount_amt;
 
          //Set Unit cost
-
          var per_unit_tax      = purchase_price*tax/100;
          var per_unit_discount = (purchase_price+per_unit_tax)*discount/100;
          var per_unit_total    = purchase_price + per_unit_tax - per_unit_discount;
