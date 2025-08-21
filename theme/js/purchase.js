@@ -173,8 +173,8 @@ function decrement_qty(rowcount){
 //CALCUALATED SALES PRICE
 function calculate_sales_price(rowcount){
   var purchase_price = (isNaN(parseFloat($("#td_data_"+rowcount+"_10").val().trim()))) ? 0 :parseFloat($("#td_data_"+rowcount+"_10").val().trim());
-  var profit_margin = parseFloat($("#tr_profit_"+i+"_100").val().trim()).toFixed(2);
-  var sales_price = parseFloat((purchase_price + profit_margin).toFixed(2));
+  var profit_margin = parseFloat($("#tr_profit_"+rowcount+"_100").val().trim());
+  var sales_price = purchase_price + profit_margin;
   $("#td_data_"+rowcount+"_13").val(sales_price.toFixed(2));
 }
 //END

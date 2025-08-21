@@ -9,7 +9,10 @@ class Reports_model extends CI_Model {
 		$from_date=date("Y-m-d",strtotime($from_date));
 		$to_date=date("Y-m-d",strtotime($to_date));
 
-		$this->db->select("a.id,a.sales_code,a.sales_date,b.customer_name,b.customer_code,a.grand_total,a.paid_amount, a.other_charges_tax_id as vat_id");
+		$this->db->select("a.id,a.sales_code,a.sales_date,b.customer_name,b.customer_code,a.grand_total,a.paid_amount, a.other_charges_tax_id as vat_id, sr.paid_amount as return_amt");
+		$this->db->from("db_sales as a");
+		$this->db->join("db_customers as b", "a.customer_id = b.id", "left");
+		$this->db->join("db_salesreturn as sr", "a.id = sr.sales_id", "left");
 
 		if($customer_id!=''){
 
@@ -18,10 +21,7 @@ class Reports_model extends CI_Model {
 		if($view_all=="no"){
 			$this->db->where("(a.sales_date>='$from_date' and a.sales_date<='$to_date')");
 		}
-		$this->db->where("b.`id`= a.`customer_id`");
-		$this->db->from("db_sales as a");
 		$this->db->where("a.`sales_status`= 'Final'");
-		$this->db->from("db_customers as b");
 
 
 
@@ -32,35 +32,35 @@ class Reports_model extends CI_Model {
 		if($q1->num_rows()>0){
 			$i=0;
 			$tot_grand_total=0;
+			$tot_trn_amount=0;
 			$tot_paid_amount=0;
-			$tot_due_amount=0;
 			foreach ($q1->result() as $res1) {
+				$return_amt = ($res1->return_amt > 0) ? $res1->return_amt : 0;
 				echo "<tr>";
 				echo "<td>".++$i."</td>";
 				echo "<td><a title='View Invoice' href='".base_url("sales/invoice/$res1->id")."'>".$res1->sales_code."</a></td>";
 				echo "<td>".show_date($res1->sales_date)."</td>";
 				echo "<td>".$res1->customer_code."</td>";
 				echo "<td>".$res1->customer_name."</td>";
-				$vat = $this->db->where("id",$res1->vat_id)->get('db_tax')->row();
-				echo "<td>". ceil($vat->tax)."% </td>";
+				// $vat = $this->db->where("id",$res1->vat_id)->get('db_tax')->row();
+				// echo "<td>". ceil($vat->tax)."% </td>";
 				echo "<td class='text-right'>".number_format($res1->grand_total,2,'.','')."</td>";
-				echo "<td class='text-right'>".number_format($res1->paid_amount,2,'.','')."</td>";
+				echo "<td class='text-right'>".number_format($return_amt,2,'.','')."</td>";
+				echo "<td class='text-right'>".number_format(($res1->paid_amount - $return_amt),2,'.','')."</td>";
 				// echo "<td class='text-right'>".number_format(($res1->grand_total-$res1->paid_amount),2,'.','')."</td>";
 				echo "</tr>";
 				$tot_grand_total+=$res1->grand_total;
+				$tot_trn_amount+=$return_amt;
 				$tot_paid_amount+=$res1->paid_amount;
-				// $tot_due_amount+=($res1->grand_total-$res1->paid_amount);
-
 			}
 
 			echo "<tr>
-					  <td class='text-right text-bold' colspan='6'><b>Total :</b></td>
-					  <td class='text-right text-bold'>".number_format($tot_grand_total,2,'.','')."</td>
-					  <td class='text-right text-bold'>".number_format($tot_paid_amount,2,'.','')."</td>
-					  </tr>";
-					}
-					//   <td class='text-right text-bold'>".number_format($tot_due_amount,2,'.','')."</td>
-		else{
+				<td class='text-right text-bold' colspan='5'><b>Total :</b></td>
+				<td class='text-right text-bold'>".number_format($tot_grand_total,2,'.','')."</td>
+				<td class='text-right text-bold'>".number_format($tot_trn_amount,2,'.','')."</td>
+				<td class='text-right text-bold'>".number_format(($tot_paid_amount - $tot_trn_amount),2,'.','')."</td>
+			</tr>";
+		}else{
 			echo "<tr>";
 			echo "<td class='text-center text-danger' colspan=13>No Records Found</td>";
 			echo "</tr>";
